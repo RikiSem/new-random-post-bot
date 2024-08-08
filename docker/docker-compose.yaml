@@ -1,0 +1,36 @@
+name: random_photo_bot
+services:
+  mysql:
+    container_name: random_photo_bot_mysql
+    image: mysql:8.2
+    restart: always
+    ports:
+      - 3306:3306
+    env_file:
+      - ../envs/mysql/.env
+    volumes:
+      - db_randomBot_data:/var/lib/mysql
+    networks:
+      - default
+
+  back:
+    container_name: random_photo_bot_back
+    volumes:
+      - ../src:/var/www/bot
+    build:
+      context: dockerfiles
+      dockerfile: dockerfile
+    restart: always
+    command:
+      - "index.py"
+    networks:
+      - default
+
+volumes:
+  db_randomBot_data:
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
