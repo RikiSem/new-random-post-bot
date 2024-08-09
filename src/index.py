@@ -24,11 +24,20 @@ global canSendFoto, canSendVideo
 canSendFoto = False
 canSendVideo = False
 markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-btn1 = types.KeyboardButton(BotButtons.randomFoto)
-btn2 = types.KeyboardButton(BotButtons.loadFoto)
-btn3 = types.KeyboardButton(BotButtons.randomVideo)
-btn4 = types.KeyboardButton(BotButtons.loadVideo)
-markup.add(btn1, btn2, btn3, btn4)
+markup.add(
+    types.KeyboardButton(BotButtons.randomFoto),
+    types.KeyboardButton(BotButtons.loadFoto),
+    types.KeyboardButton(BotButtons.randomVideo),
+    types.KeyboardButton(BotButtons.loadVideo),
+)
+submarkup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(
+    types.KeyboardButton(BotButtons.buy),
+    types.KeyboardButton(BotButtons.cancel)
+)
+paymarkup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(
+    types.KeyboardButton(BotButtons.pay),
+    types.KeyboardButton(BotButtons.cancel)
+)
 
 
 def checkSubscriber(userId):
@@ -75,21 +84,15 @@ def handler(message):
                     bot.send_message(userId, "Тогда отправь мне видео")
             else:
                 bot.send_message(userId, "Время вашей подписки вышло или вы не были подписаны ранее")
-                submarkup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-                    types.KeyboardButton(BotButtons.buy),
-                    types.KeyboardButton(BotButtons.cancel)
-                )
                 bot.send_message(userId,
                                  message.from_user.first_name + ", для просмотра видео тебе необходимо оформить подписку.\nПодписка стоит 70 рублей в месяц, после чего ее снова потребуется продлить. Возврат средств за оформление подписки не проводится.\nНу так что, хочешь?",
                                  reply_markup=submarkup)
         elif message.text == BotButtons.buy:
-            paymarkup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-                types.KeyboardButton("Оплата через внутренний кошелек Телеграмм"),
-                types.KeyboardButton(BotButtons.cancel)
-            )
             bot.send_message(userId, "Оплата происходит через кошелек Телеграмм", reply_markup=paymarkup)
         elif message.text == BotButtons.cancel:
             bot.send_message(userId, "Как хочешь, " + message.from_user.first_name + ")", reply_markup=markup)
+        elif message.text == BotButtons.pay:
+            pass
 
 
 @bot.message_handler(content_types=['photo'])
