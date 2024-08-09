@@ -11,7 +11,7 @@ class BlackList(Mysql):
     def getUser(self, userId):
         try:
             self.cursor.execute(
-                f'SELECT * FROM {self.table} where user_id = {userId}'
+                f'SELECT * FROM {self.table} WHERE user_id = {userId}'
             )
             result = self.cursor.fetchone()
         except():
