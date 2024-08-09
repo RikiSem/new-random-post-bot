@@ -11,6 +11,20 @@ try:
             "end INT" \
             ")"
     cursor.execute(query)
+
+    query = "CREATE TABLE blacklist(" \
+            "id INT AUTO_INCREMENT PRIMARY KEY, " \
+            "user_id INT, " \
+            ")"
+    cursor.execute(query)
+
+    query = "CREATE TABLE post(" \
+            "id INT AUTO_INCREMENT PRIMARY KEY, " \
+            "type CHAR(255)" \
+            "entity_id INT, " \
+            ")"
+    cursor.execute(query)
+
     cursor.close()
     connection.close()
 except Exception as e:
