@@ -10,5 +10,5 @@ class Mysql:
             host='mysql',
             database='randomBot'
         )
-        self.cursor = self.mysql.cursor()
+        self.cursor = self.mysql.cursor(buffered=True)
         self.mysql.autocommit = True

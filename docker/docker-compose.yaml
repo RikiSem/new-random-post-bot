@@ -23,6 +23,9 @@ services:
     restart: always
     command:
       - "index.py"
+    depends_on:
+      - mysql
+      - rabbitmq
     networks:
       - default
 

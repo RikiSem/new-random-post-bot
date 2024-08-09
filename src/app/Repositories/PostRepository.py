@@ -15,11 +15,24 @@ class PostRepository(Mysql):
             f"INSERT INTO post (type, entity_id) VALUES ('{type}', {entityId})"
         )
 
-    def getLastPostByType(self, type):
-        self.cursor.execute(
-            f"SELECT * FROM post WHERE type = '{type}' ORDER BY id DESC"
-        )
-        post = self.cursor.fetchone()
+    def getFirstPostByType(self, type):
+        try:
+            self.cursor.execute(
+                f"SELECT * FROM post WHERE type = '{type}' ORDER BY id ASC"
+            )
+            post = self.cursor.fetchone()
+            return post
+        except():
+            self.getLastPostByType(type)
 
-        return post
+
+    def getLastPostByType(self, type):
+        try:
+            self.cursor.execute(
+                f"SELECT * FROM post WHERE type = '{type}' ORDER BY id DESC"
+            )
+            post = self.cursor.fetchone()
+            return post
+        except():
+            self.getLastPostByType(type)
 

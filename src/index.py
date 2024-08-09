@@ -1,6 +1,7 @@
 import telebot
 from telebot import types
 import time
+from threading import Thread
 from app.Confs.TgApiConf import TgApiConf
 from app.Confs.TgConf import TgConf
 from app.Services.VideoPost import Video
@@ -71,17 +72,21 @@ def handler(message):
         bot.send_message(userId, "вы забанены(")
     else:
         if message.text == BotButtons.randomFoto:
-            Photo.send(message)
+            sendFotoThread = Thread(target=Photo.send(message))
+            sendFotoThread.start()
         elif message.text == BotButtons.loadFoto:
             canSendFoto = True
             bot.send_message(userId, "Тогда отправь мне фото")
+            canSendFoto = False
         elif message.text in [BotButtons.randomVideo, BotButtons.loadVideo]:
             if checkSubscriber(str(message.from_user.id)) or userId in TgConf.admins:
                 if message.text == BotButtons.randomVideo:
-                    Video.send(message)
+                    sendVideoThread = Thread(target=Video.send(message))
+                    sendVideoThread.start()
                 else:
                     canSendVideo = True
                     bot.send_message(userId, "Тогда отправь мне видео")
+                    canSendVideo = False
             else:
                 bot.send_message(userId, "Время вашей подписки вышло или вы не были подписаны ранее")
                 bot.send_message(userId,
@@ -98,23 +103,25 @@ def handler(message):
 @bot.message_handler(content_types=['photo'])
 def saveFoto(message):
     global canSendFoto
-    print(str(message.from_user.username) + "//Состояние в saveFoto - " + str(canSendFoto))
+    canSendFoto = True
     if canSendFoto:
         Photo.save(message)
-        canSendFoto = False
+        print(str(message.from_user.username) + "//Состояние в saveFoto - " + str(canSendFoto))
         bot.send_message(message.from_user.id, "Спасибо за пополнение коллекции бота!")
+        canSendFoto = False
     elif not canSendFoto:
-        bot.send_message(message.from_user.id, "Сначала нажми на кнопку 'Загрузить свою фотку'")
+        bot.send_message(message.from_user.id, f"Сначала нажми на кнопку '{BotButtons.loadFoto}'")
 
 
 @bot.message_handler(content_types=['video'])
 def saveVideo(message):
     global canSendVideo
-    print(str(message.from_user.username) + "//Состояние в saveVideo - " + str(canSendVideo))
+    canSendVideo = True
     if canSendVideo:
         Video.save(message)
-        canSendVideo = False
+        print(str(message.from_user.username) + "//Состояние в saveVideo - " + str(canSendVideo))
         bot.send_message(message.from_user.id, "Спасибо за пополнение коллекции бота!")
+        canSendVideo = False
     elif not canSendVideo:
         bot.send_message(message.from_user.id, "Сначала нажми на кнопку 'Загрузить свою фотку'")
 
