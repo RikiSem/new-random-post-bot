@@ -14,14 +14,14 @@ try:
 
     query = "CREATE TABLE blacklist(" \
             "id INT AUTO_INCREMENT PRIMARY KEY, " \
-            "user_id INT, " \
+            "user_id INT " \
             ")"
     cursor.execute(query)
 
     query = "CREATE TABLE post(" \
             "id INT AUTO_INCREMENT PRIMARY KEY, " \
-            "type CHAR(255)" \
-            "entity_id INT, " \
+            "type CHAR(255)," \
+            "entity_id INT " \
             ")"
     cursor.execute(query)
 
