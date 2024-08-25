@@ -11,16 +11,24 @@ class PostRepository(Mysql):
     video_type = 'video'
 
     def savePost(self, type, entityId):
-        self.cursor.execute(
+        connect = self.getConnect()
+        cursor = self.getCursor(connect)
+        cursor.execute(
             f"INSERT INTO post (type, entity_id) VALUES ('{type}', {entityId})"
         )
 
+        cursor.close()
+        connect.close()
+
     def getFirstPostByType(self, type):
         try:
-            self.cursor.execute(
+            connect = self.getConnect()
+            cursor = self.getCursor(connect)
+            cursor.execute(
                 f"SELECT * FROM post WHERE type = '{type}' ORDER BY id ASC"
             )
-            post = self.cursor.fetchone()
+            post = cursor.fetchone()
+            self.closeAll(connect, cursor)
             return post
         except():
             self.getLastPostByType(type)
@@ -28,10 +36,13 @@ class PostRepository(Mysql):
 
     def getLastPostByType(self, type):
         try:
-            self.cursor.execute(
+            connect = self.getConnect()
+            cursor = self.getCursor(connect)
+            cursor.execute(
                 f"SELECT * FROM post WHERE type = '{type}' ORDER BY id DESC"
             )
-            post = self.cursor.fetchone()
+            post = cursor.fetchone()
+            self.closeAll(connect, cursor)
             return post
         except():
             self.getLastPostByType(type)

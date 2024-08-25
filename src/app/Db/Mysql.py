@@ -3,12 +3,21 @@ from mysql.connector import connect, Error
 
 
 class Mysql:
-    def __init__(self):
-        self.mysql = connect(
+    def getConnect(self):
+        connection = connect(
             user='root',
             password='',
             host='mysql',
-            database='randomBot'
+            database='randomBot',
+            ssl_disabled=True
         )
-        self.cursor = self.mysql.cursor(buffered=True)
-        self.mysql.autocommit = True
+        connection.autocommit = True
+
+        return connection
+
+    def getCursor(self, connection):
+        return connection.cursor(buffered=True)
+
+    def closeAll(self, connection, cursor):
+        connection.close()
+        cursor.close()

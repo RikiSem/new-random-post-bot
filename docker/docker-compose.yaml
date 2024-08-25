@@ -25,7 +25,6 @@ services:
       - "index.py"
     depends_on:
       - mysql
-      - rabbitmq
     networks:
       - default
 

@@ -6,10 +6,17 @@ try:
     cursor = connection.cursor()
     query = "CREATE TABLE subscribers(" \
             "id INT AUTO_INCREMENT PRIMARY KEY, " \
-            "user_id INT, " \
-            "start INT, " \
-            "end INT" \
+            "user_id VARCHAR(255), " \
+            "start CHAR(255), " \
+            "end CHAR(255)" \
             ")"
+    cursor.execute(query)
+
+    query = "CREATE TABLE users(" \
+        "id INT AUTO_INCREMENT PRIMARY KEY, " \
+        "user_id VARCHAR(255), " \
+        "username CHAR(255) " \
+        ")"
     cursor.execute(query)
 
     query = "CREATE TABLE blacklist(" \

@@ -1,0 +1,13 @@
+.idea/
+src/.idea
+src/__pycache__/
+src/app/__pycache__/
+src/app/.idea/
+src/app/Confs/__pycache__/
+src/app/Confs/.idea/
+src/app/Db/__pycache__/
+src/app/Db/.idea/
+src/app/Repositories/.idea/
+src/app/Repositories/__pycache__/
+src/app/Services/.idea/
+src/app/Services/__pycache__/
