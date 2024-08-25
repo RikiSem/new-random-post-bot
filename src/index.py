@@ -173,7 +173,6 @@ def saveFoto(message):
 @bot.message_handler(content_types=['video'])
 def saveVideo(message):
     global canSendVideo
-    canSendVideo = True
     if canSendVideo:
         Video.save(message)
         print(str(message.from_user.username) + "//Состояние в saveVideo - " + str(canSendVideo))
