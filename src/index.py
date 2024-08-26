@@ -99,9 +99,10 @@ def sendTerms(message):
 @bot.message_handler()
 def handler(message):
     global canSendFoto, canSendVideo, userLang
-
-    rememberUser(message)
+    canSendFoto = False
+    canSendVideo = False
     isAdmin = False
+    rememberUser(message)
     userId = message.from_user.id
     userLang = 'en' if message.from_user.language_code not in ['ru', 'be', 'uk'] else 'ru'
     resultBlacklistCheck = checkBlackList(message.from_user.id)
@@ -118,6 +119,7 @@ def handler(message):
             sendFotoThread.start()
         elif message.text == BotButtons.langs[userLang]['loadFoto']:
             canSendFoto = True
+            canSendVideo = False
             bot.send_message(userId, BotTexts.langs[userLang]['sendFoto'])
         elif message.text in [BotButtons.langs[userLang]['randomVideo'], BotButtons.langs[userLang]['loadVideo']]:
             if checkSubscriber(str(message.from_user.id)) or userId in TgConf.admins:
@@ -126,6 +128,7 @@ def handler(message):
                     sendVideoThread.start()
                 else:
                     canSendVideo = True
+                    canSendFoto = False
                     bot.send_message(userId, BotTexts.langs[userLang]['sendVideo'])
             else:
                 bot.send_message(userId, BotTexts.langs[userLang]['subscriptionExpired'])
