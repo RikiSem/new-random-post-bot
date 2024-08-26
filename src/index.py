@@ -15,7 +15,7 @@ from app.Confs.BotTexts import BotTexts
 from app.Services.Payments import Payments
 import app.Confs.Rules as rules
 
-bot = telebot.TeleBot(TgApiConf.token)
+bot = telebot.TeleBot(TgApiConf.token, num_threads=10)
 Photo = Photo(bot)
 Video = Video(bot)
 Payments = Payments(bot)
