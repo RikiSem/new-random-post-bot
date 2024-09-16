@@ -104,7 +104,7 @@ async def handler(message):
     canSendFoto = False
     canSendVideo = False
     isAdmin = False
-    rememberUser(message)
+    await rememberUser(message)
     userId = message.from_user.id
     userLang = 'en' if message.from_user.language_code not in ['ru', 'be', 'uk'] else 'ru'
     resultBlacklistCheck = checkBlackList(message.from_user.id)
