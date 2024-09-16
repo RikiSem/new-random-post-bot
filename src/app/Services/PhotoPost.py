@@ -14,7 +14,7 @@ class Photo(BaseService):
         messageId = response.get('result').get('message_id')
         self.postRepository.savePost(self.postRepository.photo_type, messageId)
 
-    def send(self, message):
+    async def send(self, message):
         lastPostId = self.postRepository.getLastPostByType(self.postRepository.photo_type)
         lastPostId = lastPostId[self.postRepository.field_entity_id]
 
@@ -27,6 +27,6 @@ class Photo(BaseService):
         print(str(message.from_user.username) + " (" + str(message.from_user.id) + ")-" + str(
             curTime) + "//ID фото-поста - " + str(postId) + ", последний ID - " + str(lastPostId))
         try:
-            self.bot.copy_message(message.from_user.id, "@RandomFotoChannel", postId, "")
+            await self.bot.copy_message(message.from_user.id, "@RandomFotoChannel", postId, "")
         except():
-            self.send(message)
+            await self.send(message)

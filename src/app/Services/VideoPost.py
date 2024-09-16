@@ -14,7 +14,7 @@ class Video(BaseService):
         messageId = response.get('result').get('message_id')
         self.postRepository.savePost(self.postRepository.video_type, messageId)
 
-    def send(self, message):
+    async def send(self, message):
         lastPostId = self.postRepository.getLastPostByType(self.postRepository.video_type)
         lastPostId = lastPostId[self.postRepository.field_entity_id]
 
@@ -27,6 +27,6 @@ class Video(BaseService):
         print(str(message.from_user.username) + " (" + str(message.from_user.id) + ")-" + str(
             curTime) + "//ID видео-поста - " + str(postId) + ", последний ID - " + str(lastPostId))
         try:
-            self.bot.copy_message(message.from_user.id, "@RandomniyVidoeChannel", postId, "")
+            await self.bot.copy_message(message.from_user.id, "@RandomniyVidoeChannel", postId, "")
         except():
-            self.send(message)
+            await self.send(message)

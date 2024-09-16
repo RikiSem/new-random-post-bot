@@ -7,8 +7,8 @@ class Payments(BaseService):
 
     price_one_month_subscribe = 50
 
-    def sendInvoice(self, message):
-        self.bot.send_invoice(
+    async def sendInvoice(self, message):
+        await self.bot.send_invoice(
             message.chat.id,
             'Подписка на видео',
             'Дает возможность загружать и получать видео',
@@ -21,8 +21,8 @@ class Payments(BaseService):
             protect_content=True
         )
 
-    def sendPreCheckOutQueryAnwer(self, pre_checkout_query):
-        self.bot.answer_pre_checkout_query(
+    async def sendPreCheckOutQueryAnwer(self, pre_checkout_query):
+        await self.bot.answer_pre_checkout_query(
             pre_checkout_query.id,
             ok=True,
             error_message='Что то пошло не так, попробуйте еще раз'
