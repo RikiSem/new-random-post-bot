@@ -18,8 +18,8 @@ from app.Repositories.UserRepository import UserRepository
 from app.Repositories.SubcsribersRepository import Subscribers
 
 bot = AsyncTeleBot(TgApiConf.token)
-Photo = Photo(bot)
-Video = Video(bot)
+photo = Photo(bot)
+video = Video(bot)
 Payments = Payments(bot)
 SubscribersRepository = Subscribers()
 BlacklistRepository = BlackList()
@@ -117,8 +117,7 @@ async def handler(message):
         await bot.send_message(userId, BotTexts.langs[userLang]['banned'])
     else:
         if message.text == BotButtons.langs[userLang]['randomFoto']:
-            sendFotoThread = Thread(target=Photo.send(message))
-            sendFotoThread.start()
+            await photo.send(message)
         elif message.text == BotButtons.langs[userLang]['loadFoto']:
             canSendFoto = True
             canSendVideo = False
@@ -126,8 +125,7 @@ async def handler(message):
         elif message.text in [BotButtons.langs[userLang]['randomVideo'], BotButtons.langs[userLang]['loadVideo']]:
             if checkSubscriber(str(message.from_user.id)) or userId in TgConf.admins:
                 if message.text == BotButtons.langs[userLang]['randomVideo']:
-                    sendVideoThread = Thread(target=Video.send(message))
-                    sendVideoThread.start()
+                    await video.send(message)
                 else:
                     canSendVideo = True
                     canSendFoto = False
@@ -153,12 +151,12 @@ async def handler(message):
             await bot.send_message(userId, BotTexts.langs[userLang]['good'] + ', ' + message.from_user.first_name,
                              reply_markup=currentMarkup)
         elif message.text == BotButtons.langs[userLang]['pay']:
-            Payments.sendInvoice(message)
+            await Payments.sendInvoice(message)
         elif message.text == BotButtons.langs[userLang]['admin_transactions']:
             if not userId in TgConf.admins:
                 await bot.send_message(userId, BotTexts.langs[userLang]['howInAdmin'], reply_markup=currentMarkup)
             else:
-                Payments.getTransactionsList()
+                await Payments.getTransactionsList()
                 await bot.send_message(userId, BotTexts.langs[userLang]['logs'], reply_markup=currentMarkup)
 
 
@@ -166,7 +164,7 @@ async def handler(message):
 async def saveFoto(message):
     global canSendFoto
     if canSendFoto:
-        Photo.save(message)
+        photo.save(message)
         print(str(message.from_user.username) + "//Состояние в saveFoto - " + str(canSendFoto))
         await bot.send_message(message.from_user.id, BotTexts.langs[userLang]['photoAdded'])
         canSendFoto = False
@@ -179,7 +177,7 @@ async def saveFoto(message):
 async def saveVideo(message):
     global canSendVideo
     if canSendVideo:
-        Video.save(message)
+        video.save(message)
         print(str(message.from_user.username) + "//Состояние в saveVideo - " + str(canSendVideo))
         await bot.send_message(message.from_user.id, BotTexts.langs[userLang]['videoAdded'])
         canSendVideo = False

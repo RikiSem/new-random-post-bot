@@ -28,7 +28,7 @@ class Payments(BaseService):
             error_message='Что то пошло не так, попробуйте еще раз'
         )
 
-    def getTransactionsList(self):
+    async def getTransactionsList(self):
         for transaction in self.bot.get_star_transactions().transactions:
             print(transaction)
 
