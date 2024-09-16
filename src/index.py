@@ -123,7 +123,7 @@ async def handler(message):
             canSendVideo = False
             await bot.send_message(userId, BotTexts.langs[userLang]['sendFoto'])
         elif message.text in [BotButtons.langs[userLang]['randomVideo'], BotButtons.langs[userLang]['loadVideo']]:
-            if checkSubscriber(str(message.from_user.id)) or userId in TgConf.admins:
+            if await checkSubscriber(str(message.from_user.id)) or userId in TgConf.admins:
                 if message.text == BotButtons.langs[userLang]['randomVideo']:
                     await video.send(message)
                 else:
