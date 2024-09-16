@@ -63,7 +63,7 @@ async def checkBlackList(userId):
 @bot.message_handler(commands=["start"])
 async def firstStart(message):
     global userLang
-    rememberUser(message)
+    await rememberUser(message)
     userLang = 'en' if message.from_user.language_code not in ['ru', 'be', 'uk'] else 'ru'
     isAdmin = False
     if message.from_user.id in TgConf.admins:
