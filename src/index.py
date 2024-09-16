@@ -107,7 +107,7 @@ async def handler(message):
     await rememberUser(message)
     userId = message.from_user.id
     userLang = 'en' if message.from_user.language_code not in ['ru', 'be', 'uk'] else 'ru'
-    resultBlacklistCheck = checkBlackList(message.from_user.id)
+    resultBlacklistCheck = await checkBlackList(message.from_user.id)
     if message.from_user.id in TgConf.admins:
         isAdmin = True
 
