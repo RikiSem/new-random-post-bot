@@ -16,7 +16,7 @@ class Subscribers(Mysql):
         cursor = self.getCursor(connect)
         try:
             cursor.execute(
-                f'SELECT * FROM {self.table} where `user_id` = {userId}'
+                f'SELECT * FROM {self.table} where `user_id` = {userId} ORDER BY `id` DESC'
             )
             result = cursor.fetchone()
         except():
