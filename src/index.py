@@ -196,7 +196,7 @@ def preCheckoutQuery(pre_checkout_query):
 async def successfulPayment(message):
     userId = message.from_user.id
     try:
-        await Payments.successfulPayment(userId)
+        Payments.successfulPayment(userId)
         await bot.send_message(
             userId,
             f"{BotTexts.langs[userLang]['thank_you_for_purchasing_a_subscription']}!",

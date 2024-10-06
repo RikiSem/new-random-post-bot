@@ -21,8 +21,8 @@ class Payments(BaseService):
             protect_content=True
         )
 
-    async def sendPreCheckOutQueryAnwer(self, pre_checkout_query):
-        await self.bot.answer_pre_checkout_query(
+    def sendPreCheckOutQueryAnwer(self, pre_checkout_query):
+        self.bot.answer_pre_checkout_query(
             pre_checkout_query.id,
             ok=True,
             error_message='Что то пошло не так, попробуйте еще раз'
@@ -32,6 +32,6 @@ class Payments(BaseService):
         for transaction in self.bot.get_star_transactions().transactions:
             print(transaction)
 
-    async def successfulPayment(self, userId):
+    def successfulPayment(self, userId):
         subReps = Subscribers()
         subReps.addNewSubscriber(userId)
