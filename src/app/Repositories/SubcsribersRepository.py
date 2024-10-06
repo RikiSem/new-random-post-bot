@@ -19,6 +19,7 @@ class Subscribers(Mysql):
                 f'SELECT * FROM {self.table} where `user_id` = {userId} ORDER BY `id` DESC'
             )
             result = cursor.fetchone()
+            print(result[self.field_end])
         except():
             result = None
         self.closeAll(connect, cursor)
