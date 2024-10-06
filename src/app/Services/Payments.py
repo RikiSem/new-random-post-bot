@@ -32,6 +32,6 @@ class Payments(BaseService):
         for transaction in self.bot.get_star_transactions().transactions:
             print(transaction)
 
-    def successfulPayment(self, userId):
+    async def successfulPayment(self, userId):
         subReps = Subscribers()
         subReps.addNewSubscriber(userId)
