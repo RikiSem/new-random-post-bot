@@ -187,9 +187,9 @@ async def saveVideo(message):
 
 
 @bot.pre_checkout_query_handler(func=lambda query: True)
-def preCheckoutQuery(pre_checkout_query):
+async def preCheckoutQuery(pre_checkout_query):
     print(f'preCheckoutQuery оплаты подписки пользователем {pre_checkout_query.from_user.id}')
-    Payments.sendPreCheckOutQueryAnwer(pre_checkout_query)
+    await Payments.sendPreCheckOutQueryAnwer(pre_checkout_query)
 
 
 @bot.message_handler(content_types=['successful_payment'])

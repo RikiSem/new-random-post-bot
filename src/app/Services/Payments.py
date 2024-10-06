@@ -21,8 +21,8 @@ class Payments(BaseService):
             protect_content=True
         )
 
-    def sendPreCheckOutQueryAnwer(self, pre_checkout_query):
-        self.bot.answer_pre_checkout_query(
+    async def sendPreCheckOutQueryAnwer(self, pre_checkout_query):
+        await self.bot.answer_pre_checkout_query(
             pre_checkout_query.id,
             ok=True,
             error_message='Что то пошло не так, попробуйте еще раз'
