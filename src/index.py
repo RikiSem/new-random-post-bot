@@ -12,6 +12,7 @@ from app.Confs.TgApiConf import TgApiConf
 from app.Services.Payments import Payments
 from app.Services.WaifuApi import WaifuApi
 from app.Confs.BotButtons import BotButtons
+from app.Confs.premiumItems import premiumItems
 from telebot.async_telebot import AsyncTeleBot, types
 from app.Repositories.BlackListRepository import BlackList
 from app.Repositories.PostRepository import PostRepository
@@ -110,7 +111,7 @@ async def handler(message: types.Message):
     premiumUser = await checkSubscriber(str(message.from_user.id))
     await rememberUser(message)
     userId = message.from_user.id
-    userLang = 'en' if message.from_user.language_code not in ['ru', 'be', 'uk'] else 'ru'
+    userLang = 'ru' #'en' if message.from_user.language_code not in ['ru', 'be', 'uk'] else 'ru'
     resultBlacklistCheck = await checkBlackList(message.from_user.id)
     if message.from_user.id in TgConf.admins:
         isAdmin = True
@@ -141,7 +142,7 @@ async def handler(message: types.Message):
                 botTexts.langs[userLang]['stars'],
                 reply_markup=botButtons.getSubMarkup(lang=userLang)
             )
-        elif message.text in [botButtons.langs[userLang]['randomVideo'], botButtons.langs[userLang]['loadVideo'], botButtons.langs[userLang]['waifu']]:
+        elif message.text in premiumItems:
             if premiumUser or isAdmin:
                 if message.text == botButtons.langs[userLang]['randomVideo']:
                     await video.send(message)
