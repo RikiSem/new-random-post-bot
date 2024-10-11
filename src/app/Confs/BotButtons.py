@@ -11,7 +11,9 @@ class BotButtons:
             'buy': 'Купить',
             'cancel': 'Отмена',
             'pay': 'Оплата звездами ТГ',
-            'admin_transactions': 'Cписки транзакций',
+            'waifu': 'Случайная вайфу',
+            'buyPremium': 'Купить премиум',
+            'admin': 'Ты админ',
         },
         'en': {
             'randomFoto': 'Random foto',
@@ -21,7 +23,9 @@ class BotButtons:
             'buy': 'Buy',
             'cancel': 'Cancel',
             'pay': 'Teleram Stars',
-            'admin_transactions': 'List transactions',
+            'waifu': 'Random waifu',
+            'buyPremium': 'Buy premium',
+            'admin': 'U are admin',
         }
     }
 
@@ -29,8 +33,7 @@ class BotButtons:
         return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
             types.KeyboardButton(self.langs[lang]['randomFoto']),
             types.KeyboardButton(self.langs[lang]['loadFoto']),
-            types.KeyboardButton(self.langs[lang]['randomVideo']),
-            types.KeyboardButton(self.langs[lang]['loadVideo']),
+            types.KeyboardButton(self.langs[lang]['buyPremium'])
         )
 
     def getAdminMarkup(self, lang):
@@ -39,7 +42,17 @@ class BotButtons:
             types.KeyboardButton(self.langs[lang]['loadFoto']),
             types.KeyboardButton(self.langs[lang]['randomVideo']),
             types.KeyboardButton(self.langs[lang]['loadVideo']),
-            types.KeyboardButton(self.langs[lang]['admin_transactions'])
+            types.KeyboardButton(self.langs[lang]['waifu']),
+            types.KeyboardButton(self.langs[lang]['admin'])
+        )
+    
+    def getPremiumMarkup(self, lang):
+        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
+            types.KeyboardButton(self.langs[lang]['randomFoto']),
+            types.KeyboardButton(self.langs[lang]['loadFoto']),
+            types.KeyboardButton(self.langs[lang]['randomVideo']),
+            types.KeyboardButton(self.langs[lang]['loadVideo']),
+            types.KeyboardButton(self.langs[lang]['waifu']),
         )
 
     def getSubMarkup(self, lang):
@@ -54,8 +67,3 @@ class BotButtons:
             types.KeyboardButton(self.langs[lang]['cancel'])
         )
 
-    def getMarkups(self, lang):
-        return self.getMainMarkup(lang), \
-               self.getAdminMarkup(lang), \
-               self.getSubMarkup(lang), \
-               self.getPayMarkup(lang)

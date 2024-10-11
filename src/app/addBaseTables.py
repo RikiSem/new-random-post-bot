@@ -2,8 +2,9 @@ from Confs.DbConf import DbConf
 from Db.Mysql import Mysql
 
 try:
-    connection = Mysql().mysql
-    cursor = connection.cursor()
+    mysql = Mysql()
+    connection = mysql.getConnect()
+    cursor = mysql.getCursor(connection)
     query = "CREATE TABLE subscribers(" \
             "id INT AUTO_INCREMENT PRIMARY KEY, " \
             "user_id VARCHAR(255), " \
@@ -32,7 +33,6 @@ try:
             ")"
     cursor.execute(query)
 
-    cursor.close()
-    connection.close()
+    mysql.closeAll(connection, cursor)
 except Exception as e:
     print(e)

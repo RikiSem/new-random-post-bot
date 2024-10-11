@@ -10,26 +10,28 @@ from app.Services.VideoPost import Video
 from app.Services.PhotoPost import Photo
 from app.Confs.TgApiConf import TgApiConf
 from app.Services.Payments import Payments
+from app.Services.WaifuApi import WaifuApi
 from app.Confs.BotButtons import BotButtons
-from telebot.async_telebot import AsyncTeleBot
+from telebot.async_telebot import AsyncTeleBot, types
 from app.Repositories.BlackListRepository import BlackList
 from app.Repositories.PostRepository import PostRepository
 from app.Repositories.UserRepository import UserRepository
 from app.Repositories.SubcsribersRepository import Subscribers
 
+print("Loading....")
 bot = AsyncTeleBot(TgApiConf.token)
 photo = Photo(bot)
 video = Video(bot)
 Payments = Payments(bot)
+waifuApi = WaifuApi(bot)
 SubscribersRepository = Subscribers()
 BlacklistRepository = BlackList()
 PostRep = PostRepository()
 userRep = UserRepository()
 Https = TgApiConf.https
-BotButtons = BotButtons()
-BotTexts = BotTexts()
+botButtons = BotButtons()
+botTexts = BotTexts()
 
-print("Start")
 
 global canSendFoto, canSendVideo
 canSendFoto = False
@@ -65,13 +67,14 @@ async def firstStart(message):
     global userLang
     await rememberUser(message)
     userLang = 'en' if message.from_user.language_code not in ['ru', 'be', 'uk'] else 'ru'
-    isAdmin = False
-    if message.from_user.id in TgConf.admins:
-        isAdmin = True
-    currentMarkup = BotButtons.getAdminMarkup(userLang) if isAdmin else BotButtons.getMainMarkup(userLang)
+    isAdmin = True if message.from_user.id in TgConf.admins else False
+    premiumUser = await checkSubscriber(str(message.from_user.id))
+    currentMarkup = botButtons.getMainMarkup(lang=userLang)
+    if (isAdmin or premiumUser):
+        currentMarkup = botButtons.getPremiumMarkup(lang=userLang)
     await bot.send_message(
         message.from_user.id,
-        f"{BotTexts.langs[userLang]['hello']}, {message.from_user.first_name}",
+        f"{botTexts.langs[userLang]['hello']}, {message.from_user.first_name}",
         reply_markup=currentMarkup
     )
 
@@ -99,11 +102,12 @@ async def sendTerms(message):
 
 
 @bot.message_handler()
-async def handler(message):
+async def handler(message: types.Message):
     global canSendFoto, canSendVideo, userLang
     canSendFoto = False
     canSendVideo = False
-    isAdmin = False
+    isAdmin = True if message.from_user.id in TgConf.admins else False
+    premiumUser = await checkSubscriber(str(message.from_user.id))
     await rememberUser(message)
     userId = message.from_user.id
     userLang = 'en' if message.from_user.language_code not in ['ru', 'be', 'uk'] else 'ru'
@@ -111,53 +115,70 @@ async def handler(message):
     if message.from_user.id in TgConf.admins:
         isAdmin = True
 
-    currentMarkup = BotButtons.getAdminMarkup(lang=userLang) if isAdmin else BotButtons.getMainMarkup(lang=userLang)
+    currentMarkup = botButtons.getMainMarkup(lang=userLang)
+    if (isAdmin or premiumUser):
+        currentMarkup = botButtons.getPremiumMarkup(lang=userLang)
 
     if not resultBlacklistCheck:
-        await bot.send_message(userId, BotTexts.langs[userLang]['banned'])
+        await bot.send_message(userId, botTexts.langs[userLang]['banned'])
     else:
-        if message.text == BotButtons.langs[userLang]['randomFoto']:
+        if message.text == botButtons.langs[userLang]['randomFoto']:
             await photo.send(message)
-        elif message.text == BotButtons.langs[userLang]['loadFoto']:
+        elif message.text == botButtons.langs[userLang]['loadFoto']:
             canSendFoto = True
             canSendVideo = False
-            await bot.send_message(userId, BotTexts.langs[userLang]['sendFoto'])
-        elif message.text in [BotButtons.langs[userLang]['randomVideo'], BotButtons.langs[userLang]['loadVideo']]:
-            if await checkSubscriber(str(message.from_user.id)) or userId in TgConf.admins:
-                if message.text == BotButtons.langs[userLang]['randomVideo']:
+            await bot.send_message(userId, botTexts.langs[userLang]['sendFoto'])
+        elif message.text == botButtons.langs[userLang]['buyPremium']:
+            await bot.send_message(
+                userId,
+                botTexts.langs[userLang]['pay_1'] + '\n' +
+                botTexts.langs[userLang]['pay_2'] + '\n' +
+                botTexts.langs[userLang]['pay_3'] + '\n' +
+                botTexts.langs[userLang]['subСost'] +
+                ' - ' +
+                str(Payments.price_one_month_subscribe) +
+                ' ' +
+                botTexts.langs[userLang]['stars'],
+                reply_markup=botButtons.getSubMarkup(lang=userLang)
+            )
+        elif message.text in [botButtons.langs[userLang]['randomVideo'], botButtons.langs[userLang]['loadVideo'], botButtons.langs[userLang]['waifu']]:
+            if premiumUser or isAdmin:
+                if message.text == botButtons.langs[userLang]['randomVideo']:
                     await video.send(message)
-                else:
+                elif message.text == botButtons.langs[userLang]['loadVideo']:
                     canSendVideo = True
                     canSendFoto = False
-                    await bot.send_message(userId, BotTexts.langs[userLang]['sendVideo'])
+                    await bot.send_message(userId, botTexts.langs[userLang]['sendVideo'])
+                elif message.text == botButtons.langs[userLang]['waifu']:
+                    await waifuApi.getRandomWaifu(message.chat.id)
             else:
-                await bot.send_message(userId, BotTexts.langs[userLang]['subscriptionExpired'])
+                await bot.send_message(userId, botTexts.langs[userLang]['subscriptionExpired'])
                 await bot.send_message(
                     userId,
-                    BotTexts.langs[userLang]['pay_1'] + '\n' +
-                    BotTexts.langs[userLang]['pay_2'] + '\n' +
-                    BotTexts.langs[userLang]['pay_3'] + '\n' +
-                    BotTexts.langs[userLang]['subСost'] +
+                    botTexts.langs[userLang]['pay_1'] + '\n' +
+                    botTexts.langs[userLang]['pay_2'] + '\n' +
+                    botTexts.langs[userLang]['pay_3'] + '\n' +
+                    botTexts.langs[userLang]['subСost'] +
                     ' - ' +
                     str(Payments.price_one_month_subscribe) +
                     ' ' +
-                    BotTexts.langs[userLang]['stars'],
-                    reply_markup=BotButtons.getSubMarkup(lang=userLang)
+                    botTexts.langs[userLang]['stars'],
+                    reply_markup=botButtons.getSubMarkup(lang=userLang)
                 )
-        elif message.text == BotButtons.langs[userLang]['buy']:
-            await bot.send_message(userId, BotTexts.langs[userLang]['paymentMethod'],
-                             reply_markup=BotButtons.getPayMarkup(lang=userLang))
-        elif message.text == BotButtons.langs[userLang]['cancel']:
-            await bot.send_message(userId, BotTexts.langs[userLang]['good'] + ', ' + message.from_user.first_name,
+        elif message.text == botButtons.langs[userLang]['buy']:
+            await bot.send_message(userId, botTexts.langs[userLang]['paymentMethod'],
+                             reply_markup=botButtons.getPayMarkup(lang=userLang))
+        elif message.text == botButtons.langs[userLang]['cancel']:
+            await bot.send_message(userId, botTexts.langs[userLang]['good'] + ', ' + message.from_user.first_name,
                              reply_markup=currentMarkup)
-        elif message.text == BotButtons.langs[userLang]['pay']:
+        elif message.text == botButtons.langs[userLang]['pay']:
             await Payments.sendInvoice(message)
-        elif message.text == BotButtons.langs[userLang]['admin_transactions']:
+        elif message.text == botButtons.langs[userLang]['admin_transactions']:
             if not userId in TgConf.admins:
-                await bot.send_message(userId, BotTexts.langs[userLang]['howInAdmin'], reply_markup=currentMarkup)
+                await bot.send_message(userId, botTexts.langs[userLang]['howInAdmin'], reply_markup=currentMarkup)
             else:
                 await Payments.getTransactionsList()
-                await bot.send_message(userId, BotTexts.langs[userLang]['logs'], reply_markup=currentMarkup)
+                await bot.send_message(userId, botTexts.langs[userLang]['logs'], reply_markup=currentMarkup)
 
 
 @bot.message_handler(content_types=['photo'])
@@ -166,11 +187,11 @@ async def saveFoto(message):
     if canSendFoto:
         photo.save(message)
         print(str(message.from_user.username) + "//Состояние в saveFoto - " + str(canSendFoto))
-        await bot.send_message(message.from_user.id, BotTexts.langs[userLang]['photoAdded'])
+        await bot.send_message(message.from_user.id, botTexts.langs[userLang]['photoAdded'])
         canSendFoto = False
     elif not canSendFoto:
         await bot.send_message(message.from_user.id,
-                         f"{BotTexts.langs[userLang]['first_press_the_button']} '{BotButtons.langs[userLang]['loadFoto']}'")
+                         f"{botTexts.langs[userLang]['first_press_the_button']} '{botButtons.langs[userLang]['loadFoto']}'")
 
 
 @bot.message_handler(content_types=['video'])
@@ -179,11 +200,11 @@ async def saveVideo(message):
     if canSendVideo:
         video.save(message)
         print(str(message.from_user.username) + "//Состояние в saveVideo - " + str(canSendVideo))
-        await bot.send_message(message.from_user.id, BotTexts.langs[userLang]['videoAdded'])
+        await bot.send_message(message.from_user.id, botTexts.langs[userLang]['videoAdded'])
         canSendVideo = False
     elif not canSendVideo:
         await bot.send_message(message.from_user.id,
-                         f"{BotTexts.langs[userLang]['first_press_the_button']} '{BotButtons.langs[userLang]['loadVideo']}'")
+                         f"{botTexts.langs[userLang]['first_press_the_button']} '{botButtons.langs[userLang]['loadVideo']}'")
 
 
 @bot.pre_checkout_query_handler(func=lambda query: True)
@@ -199,8 +220,8 @@ async def successfulPayment(message):
         Payments.successfulPayment(userId)
         await bot.send_message(
             userId,
-            f"{BotTexts.langs[userLang]['thank_you_for_purchasing_a_subscription']}!",
-            reply_markup=BotButtons.getMainMarkup(lang=userLang)
+            f"{botTexts.langs[userLang]['thank_you_for_purchasing_a_subscription']}!",
+            reply_markup=botButtons.getMainMarkup(lang=userLang)
         )
         print(f'Пользователь {userId} оформил подписку на 30 дней')
     except():

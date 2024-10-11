@@ -11,3 +11,4 @@ src/app/Repositories/.idea/
 src/app/Repositories/__pycache__/
 src/app/Services/.idea/
 src/app/Services/__pycache__/
+src\app\Confs\TgConf.py
