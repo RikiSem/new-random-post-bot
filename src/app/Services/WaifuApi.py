@@ -36,9 +36,8 @@ class WaifuApi(BaseService):
         try:
             params = {
                 'included_tags': [random.choice(self.nsfwTags)],
-                'height': '>=2000'
             }
-            return requests.get(self.apiUrl, params=params).json()['images'][0]['url']
+            return self.sendRequest(params)
         except:
             self.getNsfwWaifu()
 
@@ -46,8 +45,12 @@ class WaifuApi(BaseService):
         try:
             params = {
                 'included_tags': [random.choice(self.versatile)],
-                'height': '>=2000',
             }
-            return requests.get(self.apiUrl, params=params).json()['images'][0]['url']
+            return self.sendRequest(params)
         except:
             self.getVersatileWaifu()
+
+    def sendRequest(self, params):
+        response = requests.get(self.apiUrl, params=params).json()
+        print(response)
+        return response['images'][0]['url']
