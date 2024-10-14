@@ -51,6 +51,5 @@ class WaifuApi(BaseService):
             self.getVersatileWaifu()
 
     def sendRequest(self, params):
-        response = requests.get(self.apiUrl, params=params).json()
-        print(response)
-        return response['images'][0]['url']
+        response = requests.get(self.apiUrl, params=params).json()['images'][0]['url']
+        return response
