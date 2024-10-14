@@ -32,8 +32,7 @@ class WaifuApi(BaseService):
         try:
             await self.bot.send_photo(chatId, result)
         except:
-            await self.getRandomWaifu()
-        return result
+            await self.getRandomWaifu(chatId)
 
     def getNsfwWaifu(self):
         try:
