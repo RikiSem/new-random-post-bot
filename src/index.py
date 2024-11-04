@@ -25,7 +25,7 @@ bot = AsyncTeleBot(TgApiConf.token)
 logger = Logger(bot)
 photo = Photo(bot, logger)
 video = Video(bot, logger)
-Payments = Payments(bot, logger)
+payments = Payments(bot, logger)
 waifuApi = WaifuApi(bot, logger)
 SubscribersRepository = Subscribers()
 BlacklistRepository = BlackList()
@@ -139,7 +139,7 @@ async def handler(message: types.Message):
                 botTexts.langs[userLang]['pay_3'] + '\n' +
                 botTexts.langs[userLang]['subСost'] +
                 ' - ' +
-                str(Payments.price_one_month_subscribe) +
+                str(payments.price_one_month_subscribe) +
                 ' ' +
                 botTexts.langs[userLang]['stars'],
                 reply_markup=botButtons.getSubMarkup(lang=userLang)
@@ -163,7 +163,7 @@ async def handler(message: types.Message):
                     botTexts.langs[userLang]['pay_3'] + '\n' +
                     botTexts.langs[userLang]['subСost'] +
                     ' - ' +
-                    str(Payments.price_one_month_subscribe) +
+                    str(payments.price_one_month_subscribe) +
                     ' ' +
                     botTexts.langs[userLang]['stars'],
                     reply_markup=botButtons.getSubMarkup(lang=userLang)
@@ -175,12 +175,12 @@ async def handler(message: types.Message):
             await bot.send_message(userId, botTexts.langs[userLang]['good'] + ', ' + message.from_user.first_name,
                              reply_markup=currentMarkup)
         elif message.text == botButtons.langs[userLang]['pay']:
-            await Payments.sendInvoice(message)
+            await payments.sendInvoice(message)
         elif message.text == botButtons.langs[userLang]['admin_transactions']:
             if not userId in TgConf.admins:
                 await bot.send_message(userId, botTexts.langs[userLang]['howInAdmin'], reply_markup=currentMarkup)
             else:
-                await Payments.getTransactionsList()
+                await payments.getTransactionsList()
                 await bot.send_message(userId, botTexts.langs[userLang]['logs'], reply_markup=currentMarkup)
 
 
@@ -216,14 +216,14 @@ async def saveVideo(message):
 async def preCheckoutQuery(pre_checkout_query):
     logger.writeLog(f'preCheckoutQuery оплаты подписки пользователем {pre_checkout_query.from_user.id}')
     print(f'preCheckoutQuery оплаты подписки пользователем {pre_checkout_query.from_user.id}')
-    await Payments.sendPreCheckOutQueryAnwer(pre_checkout_query)
+    await payments.sendPreCheckOutQueryAnwer(pre_checkout_query)
 
 
 @bot.message_handler(content_types=['successful_payment'])
 async def successfulPayment(message):
     userId = message.from_user.id
     try:
-        Payments.successfulPayment(userId)
+        payments.successfulPayment(userId)
         await bot.send_message(
             userId,
             f"{botTexts.langs[userLang]['thank_you_for_purchasing_a_subscription']}!",
