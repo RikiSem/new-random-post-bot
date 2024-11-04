@@ -189,7 +189,7 @@ async def saveFoto(message):
     global canSendFoto
     if canSendFoto:
         photo.save(message)
-        await logger.writeLog(f'{str(message.from_user.username)}//Состояние в saveFoto - {str(canSendFoto)}')
+        await logger.writeLog(f'@{str(message.from_user.username)}//Состояние в saveFoto - {str(canSendFoto)}')
         print(str(message.from_user.username) + "//Состояние в saveFoto - " + str(canSendFoto))
         await bot.send_message(message.from_user.id, botTexts.langs[userLang]['photoAdded'])
         canSendFoto = False
@@ -203,7 +203,7 @@ async def saveVideo(message):
     global canSendVideo
     if canSendVideo:
         video.save(message)
-        await logger.writeLog(f'{str(message.from_user.username)}//Состояние в saveVideo - {str(canSendVideo)}')
+        await logger.writeLog(f'@{str(message.from_user.username)}//Состояние в saveVideo - {str(canSendVideo)}')
         print(str(message.from_user.username) + "//Состояние в saveVideo - " + str(canSendVideo))
         await bot.send_message(message.from_user.id, botTexts.langs[userLang]['videoAdded'])
         canSendVideo = False
