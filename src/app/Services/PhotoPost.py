@@ -24,8 +24,10 @@ class Photo(BaseService):
         postId = int(self.random.randint(firstPostId, int(lastPostId)))
         curTime = self.time.gmtime(self.time.time() + (60 * 60 * 3))
         curTime = self.time.strftime("%H:%M:%S", curTime)
-        print(str(message.from_user.username) + " (" + str(message.from_user.id) + ")-" + str(
-            curTime) + "//ID фото-поста - " + str(postId) + ", последний ID - " + str(lastPostId))
+        self.logger.writeLog(f'{str(message.from_user.username)} ({str(message.from_user.id)})-{str(
+            curTime)}//ID фото-поста - {str(postId)}, последний ID - {str(lastPostId)}')
+        print(f'{str(message.from_user.username)} ({str(message.from_user.id)})-{str(
+            curTime)}//ID фото-поста - {str(postId)}, последний ID - {str(lastPostId)}')
         try:
             await self.bot.copy_message(message.from_user.id, "@RandomFotoChannel", postId, "")
         except():

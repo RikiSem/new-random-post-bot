@@ -31,6 +31,7 @@ class WaifuApi(BaseService):
                 result = self.getVersatileWaifu()
         try:
             await self.bot.send_photo(chatId, result)
+            self.logger.writeLog(f'{chatId} зароллил файфу')
         except:
             await self.getRandomWaifu(chatId)
 

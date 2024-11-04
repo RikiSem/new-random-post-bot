@@ -5,6 +5,7 @@ from threading import Thread
 from datetime import datetime
 import app.Confs.Rules as rules
 from app.Confs.TgConf import TgConf
+from app.Services.Logger import Logger
 from app.Confs.BotTexts import BotTexts
 from app.Services.VideoPost import Video
 from app.Services.PhotoPost import Photo
@@ -21,10 +22,11 @@ from app.Repositories.SubcsribersRepository import Subscribers
 
 print("Loading....")
 bot = AsyncTeleBot(TgApiConf.token)
-photo = Photo(bot)
-video = Video(bot)
-Payments = Payments(bot)
-waifuApi = WaifuApi(bot)
+logger = Logger(bot)
+photo = Photo(bot, logger)
+video = Video(bot, logger)
+Payments = Payments(bot, logger)
+waifuApi = WaifuApi(bot, logger)
 SubscribersRepository = Subscribers()
 BlacklistRepository = BlackList()
 PostRep = PostRepository()
@@ -187,6 +189,7 @@ async def saveFoto(message):
     global canSendFoto
     if canSendFoto:
         photo.save(message)
+        logger.writeLog(f'{str(message.from_user.username)}//Состояние в saveFoto - {str(canSendFoto)}')
         print(str(message.from_user.username) + "//Состояние в saveFoto - " + str(canSendFoto))
         await bot.send_message(message.from_user.id, botTexts.langs[userLang]['photoAdded'])
         canSendFoto = False
@@ -200,6 +203,7 @@ async def saveVideo(message):
     global canSendVideo
     if canSendVideo:
         video.save(message)
+        logger.writeLog(f'{str(message.from_user.username)}//Состояние в saveVideo - {str(canSendVideo)}')
         print(str(message.from_user.username) + "//Состояние в saveVideo - " + str(canSendVideo))
         await bot.send_message(message.from_user.id, botTexts.langs[userLang]['videoAdded'])
         canSendVideo = False
@@ -210,6 +214,7 @@ async def saveVideo(message):
 
 @bot.pre_checkout_query_handler(func=lambda query: True)
 async def preCheckoutQuery(pre_checkout_query):
+    logger.writeLog(f'preCheckoutQuery оплаты подписки пользователем {pre_checkout_query.from_user.id}')
     print(f'preCheckoutQuery оплаты подписки пользователем {pre_checkout_query.from_user.id}')
     await Payments.sendPreCheckOutQueryAnwer(pre_checkout_query)
 
@@ -224,8 +229,10 @@ async def successfulPayment(message):
             f"{botTexts.langs[userLang]['thank_you_for_purchasing_a_subscription']}!",
             reply_markup=botButtons.getMainMarkup(lang=userLang)
         )
+        logger.writeLog(f'Пользователь {userId} оформил подписку на 30 дней')
         print(f'Пользователь {userId} оформил подписку на 30 дней')
     except():
+        f'Неоформилась подписка у пользователя {userId}'
         print(f'Неоформилась подписка у пользователя {userId}')
 
 
