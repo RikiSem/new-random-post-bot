@@ -6,8 +6,8 @@ class Logger():
         self.bot = bot
 
 
-    def writeLog(self, text):
-        self.bot.send_message(
+    async def writeLog(self, text):
+        await self.bot.send_message(
             logChannel,
             text
         )

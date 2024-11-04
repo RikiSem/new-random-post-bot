@@ -24,7 +24,7 @@ class Video(BaseService):
         postId = int(self.random.randint(firstPostId, int(lastPostId)))
         curTime = self.time.gmtime(self.time.time() + (60 * 60 * 3))
         curTime = self.time.strftime("%H:%M:%S", curTime)
-        self.logger.writeLog(f'{str(message.from_user.username)} ({str(message.from_user.id)})-{str(
+        await self.logger.writeLog(f'{str(message.from_user.username)} ({str(message.from_user.id)})-{str(
             curTime)}//ID видео-поста - {str(postId)}, последний ID - {str(lastPostId)}')
         print(f'{str(message.from_user.username)} ({str(message.from_user.id)})-{str(
             curTime)}//ID видео-поста - {str(postId)}, последний ID - {str(lastPostId)}')

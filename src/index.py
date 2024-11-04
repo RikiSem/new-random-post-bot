@@ -189,7 +189,7 @@ async def saveFoto(message):
     global canSendFoto
     if canSendFoto:
         photo.save(message)
-        logger.writeLog(f'{str(message.from_user.username)}//Состояние в saveFoto - {str(canSendFoto)}')
+        await logger.writeLog(f'{str(message.from_user.username)}//Состояние в saveFoto - {str(canSendFoto)}')
         print(str(message.from_user.username) + "//Состояние в saveFoto - " + str(canSendFoto))
         await bot.send_message(message.from_user.id, botTexts.langs[userLang]['photoAdded'])
         canSendFoto = False
@@ -203,7 +203,7 @@ async def saveVideo(message):
     global canSendVideo
     if canSendVideo:
         video.save(message)
-        logger.writeLog(f'{str(message.from_user.username)}//Состояние в saveVideo - {str(canSendVideo)}')
+        await logger.writeLog(f'{str(message.from_user.username)}//Состояние в saveVideo - {str(canSendVideo)}')
         print(str(message.from_user.username) + "//Состояние в saveVideo - " + str(canSendVideo))
         await bot.send_message(message.from_user.id, botTexts.langs[userLang]['videoAdded'])
         canSendVideo = False
@@ -214,7 +214,7 @@ async def saveVideo(message):
 
 @bot.pre_checkout_query_handler(func=lambda query: True)
 async def preCheckoutQuery(pre_checkout_query):
-    logger.writeLog(f'preCheckoutQuery оплаты подписки пользователем {pre_checkout_query.from_user.id}')
+    await logger.writeLog(f'preCheckoutQuery оплаты подписки пользователем {pre_checkout_query.from_user.id}')
     print(f'preCheckoutQuery оплаты подписки пользователем {pre_checkout_query.from_user.id}')
     await payments.sendPreCheckOutQueryAnwer(pre_checkout_query)
 
