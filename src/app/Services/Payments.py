@@ -1,17 +1,17 @@
-from ..Repositories.SubcsribersRepository import Subscribers
 from telebot import types
 from .BaseService import BaseService
+from ..Repositories.SubcsribersRepository import Subscribers
 
 
 class Payments(BaseService):
 
-    price_one_month_subscribe = 50
+    price_one_month_subscribe = 100
 
     async def sendInvoice(self, message):
         await self.bot.send_invoice(
             message.chat.id,
-            'Подписка на видео',
-            'Дает возможность загружать и получать видео',
+            'Подписка на премиум',
+            'Дает возможность использовать премиум функции бота(просмотр/загрузка видео и рулетка вайфу)',
             message.from_user.id,
             '',
             'XTR',
