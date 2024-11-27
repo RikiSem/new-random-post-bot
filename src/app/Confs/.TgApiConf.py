@@ -1,4 +1,6 @@
 logChannel = 0
+photoChannel = 0
+videoCannel = 0
 
 class TgApiConf:
     token = ""

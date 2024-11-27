@@ -1,4 +1,4 @@
-from telebot import types
+from aiogram import types
 
 
 class BotButtons:
@@ -30,40 +30,59 @@ class BotButtons:
     }
 
     def getMainMarkup(self, lang):
-        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-            types.KeyboardButton(self.langs[lang]['randomFoto']),
-            types.KeyboardButton(self.langs[lang]['loadFoto']),
-            types.KeyboardButton(self.langs[lang]['buyPremium'])
-        )
+        btnList = [
+            [
+                types.KeyboardButton(text=self.langs[lang]['randomFoto']),
+                types.KeyboardButton(text=self.langs[lang]['loadFoto']),
+                types.KeyboardButton(text=self.langs[lang]['buyPremium'])
+            ],
+        ]
+        return types.ReplyKeyboardMarkup(resize_keyboard=True, keyboard=btnList)
 
     def getAdminMarkup(self, lang):
-        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-            types.KeyboardButton(self.langs[lang]['randomFoto']),
-            types.KeyboardButton(self.langs[lang]['loadFoto']),
-            types.KeyboardButton(self.langs[lang]['randomVideo']),
-            types.KeyboardButton(self.langs[lang]['loadVideo']),
-            types.KeyboardButton(self.langs[lang]['waifu']),
-            types.KeyboardButton(self.langs[lang]['admin'])
-        )
+        btnList = [
+            [
+                types.KeyboardButton(text=self.langs[lang]['randomFoto']),
+                types.KeyboardButton(text=self.langs[lang]['loadFoto']),
+                types.KeyboardButton(text=self.langs[lang]['randomVideo'])
+            ],
+            [
+                types.KeyboardButton(text=self.langs[lang]['loadVideo']),
+                types.KeyboardButton(text=self.langs[lang]['waifu']),
+                #types.KeyboardButton(text=self.langs[lang]['admin'])
+            ]
+        ]
+        return types.ReplyKeyboardMarkup(resize_keyboard=True, keyboard=btnList)
     
     def getPremiumMarkup(self, lang):
-        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-            types.KeyboardButton(self.langs[lang]['randomFoto']),
-            types.KeyboardButton(self.langs[lang]['loadFoto']),
-            types.KeyboardButton(self.langs[lang]['randomVideo']),
-            types.KeyboardButton(self.langs[lang]['loadVideo']),
-            types.KeyboardButton(self.langs[lang]['waifu']),
-        )
+        btnList = [
+            [
+                types.KeyboardButton(text=self.langs[lang]['randomFoto']),
+                types.KeyboardButton(text=self.langs[lang]['loadFoto']),
+                types.KeyboardButton(text=self.langs[lang]['randomVideo'])
+            ],
+            [
+                types.KeyboardButton(text=self.langs[lang]['loadVideo']),
+                types.KeyboardButton(text=self.langs[lang]['waifu']),
+            ]
+        ]
+        return types.ReplyKeyboardMarkup(resize_keyboard=True, keyboard=btnList)
 
     def getSubMarkup(self, lang):
-        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-            types.KeyboardButton(self.langs[lang]['buy']),
-            types.KeyboardButton(self.langs[lang]['cancel'])
-        )
+        btnList = [
+            [
+                types.KeyboardButton(text=self.langs[lang]['buy']),
+                types.KeyboardButton(text=self.langs[lang]['cancel'])
+            ],
+        ]
+        return types.ReplyKeyboardMarkup(resize_keyboard=True, keyboard=btnList)
 
     def getPayMarkup(self, lang):
-        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-            types.KeyboardButton(self.langs[lang]['pay']),
-            types.KeyboardButton(self.langs[lang]['cancel'])
-        )
+        btnList = [
+            [
+                types.KeyboardButton(text=self.langs[lang]['pay']),
+                types.KeyboardButton(text=self.langs[lang]['cancel'])
+            ],
+        ]
+        return types.ReplyKeyboardMarkup(resize_keyboard=True, keyboard=btnList)
 

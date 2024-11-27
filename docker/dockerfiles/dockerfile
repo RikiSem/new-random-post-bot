@@ -1,6 +1,6 @@
 FROM python:3.13.0rc1-alpine3.20
 
-RUN pip install --no-cache-dir --upgrade pip & pip install requests telebot mysql-connector-python pika aiohttp
+RUN pip install --no-cache-dir --upgrade pip & pip install requests telebot mysql-connector-python pika aiohttp aiogram
 
 WORKDIR /var/www/bot
 

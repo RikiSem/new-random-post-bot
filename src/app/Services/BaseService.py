@@ -3,12 +3,12 @@ import random
 import requests
 from app.Services.Logger import Logger
 from ..Confs.TgApiConf import TgApiConf
-from telebot.async_telebot import AsyncTeleBot
+from aiogram import Bot
 from ..Repositories.PostRepository import PostRepository
 
 
 class BaseService:
-    def __init__(self, bot: AsyncTeleBot, logger: Logger):
+    def __init__(self, bot: Bot, logger: Logger):
         self.bot = bot
         self.postRepository = PostRepository()
         self.requests = requests

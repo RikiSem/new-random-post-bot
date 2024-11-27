@@ -1,8 +1,8 @@
 from app.Confs.TgApiConf import logChannel
-from telebot.async_telebot import AsyncTeleBot
+from aiogram import Bot
 
 class Logger():
-    def __init__(self, bot: AsyncTeleBot) -> None:
+    def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
 

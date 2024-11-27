@@ -1,7 +1,7 @@
 import random
 import requests
 from app.Services.Logger import Logger
-from .BaseService import BaseService, AsyncTeleBot
+from .BaseService import BaseService, Bot
 
 class WaifuApi(BaseService):
 
@@ -11,7 +11,7 @@ class WaifuApi(BaseService):
     nsfwTagsKey = 'nsfw'
     versatileTagsKey = 'versatile'
 
-    def __init__(self, bot: AsyncTeleBot, logger: Logger):
+    def __init__(self, bot: Bot, logger: Logger):
         super().__init__(bot, logger)
         self.nsfwTags = self.getTags(self.nsfwTagsKey)
         self.versatile = self.getTags(self.versatileTagsKey)

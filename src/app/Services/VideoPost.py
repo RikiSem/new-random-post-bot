@@ -1,18 +1,16 @@
 from .BaseService import BaseService
+from app.Confs.TgApiConf import videoCannel
 
 
 class Video(BaseService):
-    def save(self, message):
-        response = self.requests.post(self.TgApiConf.https + "/CopyMessage",
-                                      data={
-                                          'chat_id': "@RandomniyVidoeChannel",
-                                          'from_chat_id':  message.from_user.id,
-                                          'message_id': message.message_id,
-                                          'caption': message.from_user.id
-                                      }
-                                      ).json()
-        messageId = response.get('result').get('message_id')
-        self.postRepository.savePost(self.postRepository.video_type, messageId)
+    async def save(self, message):
+        messageId = await self.bot.copy_message(
+            chat_id=videoCannel,
+            from_chat_id=message.from_user.id,
+            message_id=message.message_id,
+            caption=str(message.from_user.id)
+        )
+        self.postRepository.savePost(self.postRepository.video_type, messageId.message_id)
 
     async def send(self, message):
         lastPostId = self.postRepository.getLastPostByType(self.postRepository.video_type)
@@ -29,6 +27,10 @@ class Video(BaseService):
         print(f'{str(message.from_user.username)} ({str(message.from_user.id)})-{str(
             curTime)}//ID видео-поста - {str(postId)}, последний ID - {str(lastPostId)}')
         try:
-            await self.bot.copy_message(message.from_user.id, "@RandomniyVidoeChannel", postId, "")
+            await self.bot.copy_message(
+                chat_id=message.from_user.id,
+                from_chat_id=videoCannel,
+                message_id=postId,
+                caption=' ')
         except():
             await self.send(message)

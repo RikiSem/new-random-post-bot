@@ -1,5 +1,7 @@
 logChannel = -1002398131549
+photoChannel = '@RandomFotoChannelTest'
+videoCannel = '@RandomVideoChannelTest'
 
 class TgApiConf:
-    token = "5704107941:AAFiD8e97KhWdZD5d4SwCsPzyuygqY6SV8E"
+    token = "7644434924:AAGjtIPQFhkE_DbCSXw4HljnJ08eDMjmf5Y"
     https = "https://api.telegram.org/bot{0}".format(token)
