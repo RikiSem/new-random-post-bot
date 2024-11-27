@@ -248,7 +248,7 @@ async def saveVideo(message, isSubscriber, isAdmin, userLang, userId):
                          f"{botTexts.langs[userLang]['first_press_the_button']} '{botButtons.langs[userLang]['loadVideo']}'")
 
 @dp.pre_checkout_query()
-async def preCheckoutQuery(pre_checkout_query: types.PreCheckoutQuery, isSubscriber, isAdmin, userLang, userId):
+async def preCheckoutQuery(pre_checkout_query: types.PreCheckoutQuery):
     await logger.writeLog(f'preCheckoutQuery оплаты подписки пользователем {pre_checkout_query.from_user.id}')
     print(f'preCheckoutQuery оплаты подписки пользователем {pre_checkout_query.from_user.id}')
     await payments.sendPreCheckOutQueryAnwer(pre_checkout_query)
