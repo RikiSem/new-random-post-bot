@@ -162,7 +162,7 @@ async def randomVideo(message: types.Message, isSubscriber, isAdmin, userLang, u
     if (isAdmin or isSubscriber):
         await video.send(message)
     else:
-        subscriptionExpired(userId)
+        await subscriptionExpired(userId)
 
 
 @dp.message(F.text == botButtons.langs['ru']['loadVideo'])
@@ -173,7 +173,7 @@ async def loadVideo(message: types.Message, isSubscriber, isAdmin, userLang, use
         canSendFoto = False
         await bot.send_message(userId, botTexts.langs[userLang]['sendVideo'])
     else:
-        subscriptionExpired(userId)
+        await subscriptionExpired(userId)
 
 
 @dp.message(F.text == botButtons.langs['ru']['waifu'])
@@ -181,25 +181,7 @@ async def waifu(message: types.Message, isSubscriber, isAdmin, userLang, userId)
     if (isAdmin or isSubscriber):
         await waifuApi.getRandomWaifu(message.chat.id)
     else:
-        subscriptionExpired(userId)
-
-@dp.message(F.text == botButtons.langs['ru']['buyPremium'])
-async def buyPremium(message: types.Message, isSubscriber, isAdmin, userLang, userId):
-    if (isAdmin or isSubscriber):
-        await bot.send_message(
-                    userId,
-                    botTexts.langs[userLang]['pay_1'] + '\n' +
-                    botTexts.langs[userLang]['pay_2'] + '\n' +
-                    botTexts.langs[userLang]['pay_3'] + '\n' +
-                    botTexts.langs[userLang]['subСost'] +
-                    ' - ' +
-                    str(payments.price_one_month_subscribe) +
-                    ' ' +
-                    botTexts.langs[userLang]['stars'],
-                    reply_markup=botButtons.getSubMarkup(lang=userLang)
-                )
-    else:
-        subscriptionExpired(userId)
+        await subscriptionExpired(userId)
 
 
 @dp.message(F.text == botButtons.langs['ru']['buy'])
