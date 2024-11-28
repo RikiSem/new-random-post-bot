@@ -148,7 +148,22 @@ async def loadFoto(message: types.Message, isSubscriber, isAdmin, userLang, user
     await bot.send_message(userId, botTexts.langs[userLang]['sendFoto'])
 
 
-@dp.message(F.text == botButtons.langs['ru']['buyPremium'] or Command('buy'))
+@dp.message(Command('buy'))
+async def buyPremium(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
+    await bot.send_message(
+        userId,
+        botTexts.langs[userLang]['pay_1'] + '\n' +
+        botTexts.langs[userLang]['pay_2'] + '\n' +
+        botTexts.langs[userLang]['pay_3'] + '\n' +
+        botTexts.langs[userLang]['subСost'] +
+        ' - ' +
+        str(payments.price_one_month_subscribe) +
+        ' ' +
+        botTexts.langs[userLang]['stars'],
+        reply_markup=botButtons.getSubMarkup(lang=userLang)
+    )
+
+@dp.message(F.text == botButtons.langs['ru']['buyPremium'])
 async def buyPremium(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     await bot.send_message(
         userId,
