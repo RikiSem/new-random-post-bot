@@ -133,7 +133,7 @@ async def sendTerms(message: types.Message, isSubscriber, isAdmin, userLang, use
 
 @dp.message(F.text == botButtons.langs['ru']['randomFoto'])
 async def randomFoto(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
-    if (showAds):
+    if (showAds and not isAdmin and not isSubscriber):
         await sendAds(userId)
     await photo.send(message)
 
@@ -143,7 +143,7 @@ async def loadFoto(message: types.Message, isSubscriber, isAdmin, userLang, user
     global canSendFoto, canSendVideo
     canSendFoto = True
     canSendVideo = False
-    if (showAds):
+    if (showAds and not isAdmin and not isSubscriber):
         await sendAds(userId)
     await bot.send_message(userId, botTexts.langs[userLang]['sendFoto'])
 
