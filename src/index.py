@@ -1,4 +1,5 @@
 import time
+import random
 import logging
 from aiogram import Bot, Dispatcher, types, F, Router
 from aiogram.handlers import PreCheckoutQueryHandler
@@ -67,61 +68,63 @@ async def rememberUser(message: types.Message):
         userRep.saveUser(message.from_user.id, message.from_user.username)
 
 
-async def checkBlackList(userId):
+async def checkBlackList(userId: int):
     result = True
     if BlacklistRepository.getUser(userId=userId) is not None:
         result = False
     return result
 
-async def subscriptionExpired(userId):
-        await bot.send_message(userId, botTexts.langs[userLang]['subscriptionExpired'])
-        await bot.send_message(
-            userId,
-            botTexts.langs[userLang]['pay_1'] + '\n' +
-            botTexts.langs[userLang]['pay_2'] + '\n' +
-            botTexts.langs[userLang]['pay_3'] + '\n' +
-            botTexts.langs[userLang]['subСost'] +
-            ' - ' +
-            str(payments.price_one_month_subscribe) +
-            ' ' +
-            botTexts.langs[userLang]['stars'],
-            reply_markup=botButtons.getSubMarkup(lang=userLang)
-        )
+async def sendAds(userId: int):
+    await bot.send_message(
+        chat_id=userId,
+        text='Оформи подписку и получишь доступ к сотням видео и не только\nЖми -> /buy'
+    )
+
+async def subscriptionExpired(userId: int):
+    await bot.send_message(userId, botTexts.langs['ru']['subscriptionExpired'])
+    await bot.send_message(
+        userId,
+        botTexts.langs['ru']['pay_1'] + '\n' +
+        botTexts.langs['ru']['pay_2'] + '\n' +
+        botTexts.langs['ru']['pay_3'] + '\n' +
+        botTexts.langs['ru']['subСost'] +
+        ' - ' +
+        str(payments.price_one_month_subscribe) +
+        ' ' +
+        botTexts.langs['ru']['stars'],
+        reply_markup=botButtons.getSubMarkup(lang='ru')
+    )
 
 
 @dp.message(Command('start'))
-async def firstStart(message: types.Message):
-    global userLang
+async def firstStart(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     await rememberUser(message)
-    userLang = 'en' if message.from_user.language_code not in ['ru', 'be', 'uk'] else 'ru'
-    isAdmin = True if message.from_user.id in TgConf.admins else False
-    premiumUser = await checkSubscriber(str(message.from_user.id))
     currentMarkup = botButtons.getMainMarkup(lang=userLang)
-    if (isAdmin or premiumUser):
+    if (isAdmin or isSubscriber):
         currentMarkup = botButtons.getPremiumMarkup(lang=userLang)
     await bot.send_message(
-        message.from_user.id,
+        userId,
         f"{botTexts.langs[userLang]['hello']}, {message.from_user.first_name}",
         reply_markup=currentMarkup
     )
 
 
 @dp.message(Command('rules'))
-async def showRules(message: types.Message):
+async def showRules(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     await bot.send_message(
-        message.from_user.id,
+        userId,
         'За нарушение правил может последовать блокировка'
     )
     await bot.send_message(
-        message.from_user.id,
+        userId,
         '\n'.join(rules.rules)
     )
 
 
 @dp.message(Command('terms'))
-async def sendTerms(message):
+async def sendTerms(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     await bot.send_message(
-        message.from_user.id,
+        userId,
         'Используя данный бот, вы автоматически соглашаетесь в положениями пользовательского соглашения\n' +
         'Текст пользовательского соглашения доступен ниже\n' +
         'https://docs.google.com/document/d/1TNsyVFcinzruBtW_MRIB9seAoTHsUyLjKTUWjX02bRg/edit?usp=sharing'
@@ -129,20 +132,24 @@ async def sendTerms(message):
 
 
 @dp.message(F.text == botButtons.langs['ru']['randomFoto'])
-async def randomFoto(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+async def randomFoto(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
+    if (showAds):
+        await sendAds(userId)
     await photo.send(message)
 
 
 @dp.message(F.text == botButtons.langs['ru']['loadFoto'])
-async def loadFoto(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+async def loadFoto(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     global canSendFoto, canSendVideo
     canSendFoto = True
     canSendVideo = False
+    if (showAds):
+        await sendAds(userId)
     await bot.send_message(userId, botTexts.langs[userLang]['sendFoto'])
 
 
-@dp.message(F.text == botButtons.langs['ru']['buyPremium'])
-async def buyPremium(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+@dp.message(F.text == botButtons.langs['ru']['buyPremium'] or Command('buy'))
+async def buyPremium(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     await bot.send_message(
         userId,
         botTexts.langs[userLang]['pay_1'] + '\n' +
@@ -158,7 +165,7 @@ async def buyPremium(message: types.Message, isSubscriber, isAdmin, userLang, us
 
 
 @dp.message(F.text == botButtons.langs['ru']['randomVideo'])
-async def randomVideo(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+async def randomVideo(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     if (isAdmin or isSubscriber):
         await video.send(message)
     else:
@@ -166,7 +173,7 @@ async def randomVideo(message: types.Message, isSubscriber, isAdmin, userLang, u
 
 
 @dp.message(F.text == botButtons.langs['ru']['loadVideo'])
-async def loadVideo(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+async def loadVideo(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     global canSendFoto, canSendVideo
     if (isAdmin or isSubscriber):
         canSendVideo = True
@@ -177,7 +184,7 @@ async def loadVideo(message: types.Message, isSubscriber, isAdmin, userLang, use
 
 
 @dp.message(F.text == botButtons.langs['ru']['waifu'])
-async def waifu(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+async def waifu(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     if (isAdmin or isSubscriber):
         await waifuApi.getRandomWaifu(message.chat.id)
     else:
@@ -185,25 +192,25 @@ async def waifu(message: types.Message, isSubscriber, isAdmin, userLang, userId)
 
 
 @dp.message(F.text == botButtons.langs['ru']['buy'])
-async def buy(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+async def buy(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     await bot.send_message(userId, botTexts.langs[userLang]['paymentMethod'],
                              reply_markup=botButtons.getPayMarkup(lang=userLang))
 
 
 
 @dp.message(F.text == botButtons.langs['ru']['cancel'])
-async def cancel(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+async def cancel(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     await bot.send_message(userId, botTexts.langs[userLang]['good'] + ', ' + message.from_user.first_name,
                              reply_markup=botButtons.getMainMarkup(lang=userLang))
 
 
 @dp.message(F.text == botButtons.langs['ru']['pay'])
-async def pay(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+async def pay(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     await payments.sendInvoice(message)
 
 
 @dp.message(F.content_type == ContentType.PHOTO)
-async def saveFoto(message, isSubscriber, isAdmin, userLang, userId):
+async def saveFoto(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     global canSendFoto
     if canSendFoto:
         await photo.save(message)
@@ -217,7 +224,7 @@ async def saveFoto(message, isSubscriber, isAdmin, userLang, userId):
 
 
 @dp.message(F.content_type == ContentType.VIDEO)
-async def saveVideo(message, isSubscriber, isAdmin, userLang, userId):
+async def saveVideo(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     global canSendVideo
     if canSendVideo:
         await video.save(message)
@@ -237,7 +244,7 @@ async def preCheckoutQuery(pre_checkout_query: types.PreCheckoutQuery):
 
 
 @dp.message(F.successful_payment)
-async def successfulPayment(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+async def successfulPayment(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     userId = message.from_user.id
     try:
         payments.successfulPayment(userId)

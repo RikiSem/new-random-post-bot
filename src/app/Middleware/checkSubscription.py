@@ -1,4 +1,5 @@
 import time
+import random
 import asyncio
 from app.Confs.TgConf import TgConf
 from aiogram import Bot
@@ -29,6 +30,7 @@ class CheckSubscription(BaseMiddleware):
         data['userLang'] = 'ru'
         data['userId'] = event.from_user.id
         data['markup'] = None
+        data['showAds'] = random.randint(0, 10) == 10
         return await handler(event, data)
 
     async def checkSubscriber(self, userId: int):
