@@ -147,8 +147,8 @@ async def loadFoto(message: types.Message, isSubscriber, isAdmin, userLang, user
         await sendAds(userId)
     await bot.send_message(userId, botTexts.langs[userLang]['sendFoto'])
 
-
-@dp.message(F.text == botButtons.langs['ru']['buyPremium'], Command('buy'))
+@dp.message(Command('buy'))
+@dp.message(F.text == botButtons.langs['ru']['buyPremium'])
 async def buyPremium(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     if (not isAdmin or not isSubscriber):
         await bot.send_message(
