@@ -16,6 +16,7 @@ from app.Services.PhotoPost import Photo
 from app.Confs.TgApiConf import TgApiConf
 from app.Services.Payments import Payments
 from app.Services.WaifuApi import WaifuApi
+from app.Services.MessageSender import MessageSender
 from app.Confs.BotButtons import BotButtons
 from app.Confs.premiumItems import premiumItems
 from app.Middleware.checkBlockList import CheckBlockList
@@ -44,9 +45,11 @@ userRep = UserRepository()
 Https = TgApiConf.https
 botButtons = BotButtons()
 botTexts = BotTexts()
+messageSender = MessageSender()
 
 
-global canSendFoto, canSendVideo
+global canSendFoto, canSendVideo, canSendMessage
+canSendMessage = False
 canSendFoto = False
 canSendVideo = False
 
@@ -146,6 +149,27 @@ async def loadFoto(message: types.Message, isSubscriber, isAdmin, userLang, user
     if (showAds and not isAdmin and not isSubscriber):
         await sendAds(userId)
     await bot.send_message(userId, botTexts.langs[userLang]['sendFoto'])
+
+@dp.message(F.text == botButtons.langs['ru']['adminSendMessage'])
+async def adminSendMessage(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
+    global canSendMessage
+    if (isAdmin):
+        await bot.send_message(
+            chat_id=userId,
+            text='Напиши сообщение'
+        )
+        canSendMessage = True
+
+@dp.message(F.text)
+async def sendMessageToUsers(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
+    if (isAdmin and canSendMessage):
+        await messageSender.sendMessageToAllUsers(message.text)
+        canSendMessage = False
+        await bot.send_message(
+            chat_id=userId,
+            text='Сообщение разослано'
+        )
+
 
 @dp.message(Command('buy'))
 @dp.message(F.text == botButtons.langs['ru']['buyPremium'])

@@ -13,7 +13,7 @@ class BotButtons:
             'pay': 'Оплата звездами ТГ',
             'waifu': 'Случайная вайфу',
             'buyPremium': 'Купить премиум',
-            'admin': 'Ты админ',
+            'adminSendMessage': 'Разослать всем юзерам',
         },
         'en': {
             'randomFoto': 'Random foto',
@@ -25,7 +25,7 @@ class BotButtons:
             'pay': 'Teleram Stars',
             'waifu': 'Random waifu',
             'buyPremium': 'Buy premium',
-            'admin': 'U are admin',
+            'adminSendMessage': 'Send message to all users',
         }
     }
 
@@ -49,7 +49,7 @@ class BotButtons:
             [
                 types.KeyboardButton(text=self.langs[lang]['loadVideo']),
                 types.KeyboardButton(text=self.langs[lang]['waifu']),
-                #types.KeyboardButton(text=self.langs[lang]['admin'])
+                types.KeyboardButton(text=self.langs[lang]['admin'])
             ]
         ]
         return types.ReplyKeyboardMarkup(resize_keyboard=True, keyboard=btnList)
