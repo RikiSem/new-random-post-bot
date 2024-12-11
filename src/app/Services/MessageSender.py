@@ -11,10 +11,13 @@ class MessageSender(BaseService):
         await self.logger.writeLog('Началась рассылка сообщения')
         for user in users:
             userId = user[self.userRepository.field_user_id]
-            await self.bot.send_message(
-                chat_id=userId,
-                text=text
-            )
-            await self.logger.writeLog(F'Сообщение отправлено юзеру {userId}')
+            try:
+                await self.bot.send_message(
+                    chat_id=userId,
+                    text=text
+                )
+                await self.logger.writeLog(F'Сообщение отправлено юзеру {userId}')
+            except():
+                await self.logger.writeLog(F'Юзер {userId} заблокировал бота')
             time.sleep(1)
         await self.logger.writeLog('Рассылка сообщения закончилась')
