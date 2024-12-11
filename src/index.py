@@ -164,6 +164,7 @@ async def adminSendMessage(message: types.Message, isSubscriber, isAdmin, userLa
 
 @dp.message(F.text)
 async def sendMessageToUsers(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
+    global canSendMessage
     if (isAdmin and canSendMessage):
         await messageSender.sendMessageToAllUsers(message.text)
         canSendMessage = False
