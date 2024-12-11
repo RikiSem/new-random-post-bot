@@ -1,3 +1,4 @@
+import time
 from .BaseService import BaseService
 
 
@@ -9,11 +10,11 @@ class MessageSender(BaseService):
         users = self.userRepository.getAllUsers()
         await self.logger.writeLog('Началась рассылка сообщения')
         for user in users:
-            userId = user[self.userRepository.field_id]
-            #await self.bot.send_message(
-            #    chat_id=userId,
-            #    text=text
-            #)
-            print(userId)
+            userId = user[self.userRepository.field_user_id]
+            await self.bot.send_message(
+                chat_id=userId,
+                text=text
+            )
             await self.logger.writeLog(F'Сообщение отправлено юзеру {userId}')
+            time.sleep(1)
         await self.logger.writeLog('Рассылка сообщения закончилась')
