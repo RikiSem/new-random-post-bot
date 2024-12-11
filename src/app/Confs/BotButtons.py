@@ -49,7 +49,7 @@ class BotButtons:
             [
                 types.KeyboardButton(text=self.langs[lang]['loadVideo']),
                 types.KeyboardButton(text=self.langs[lang]['waifu']),
-                types.KeyboardButton(text=self.langs[lang]['admin'])
+                types.KeyboardButton(text=self.langs[lang]['adminSendMessage'])
             ]
         ]
         return types.ReplyKeyboardMarkup(resize_keyboard=True, keyboard=btnList)
