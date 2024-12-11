@@ -1,7 +1,7 @@
 import time
 import random
 import requests
-from aiogram import Bot, types
+from aiogram import Bot, types, exceptions
 from app.Services.Logger import Logger
 from ..Confs.TgApiConf import TgApiConf
 from ..Repositories.PostRepository import PostRepository
