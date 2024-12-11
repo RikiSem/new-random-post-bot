@@ -38,6 +38,7 @@ photo = Photo(bot, logger)
 video = Video(bot, logger)
 payments = Payments(bot, logger)
 waifuApi = WaifuApi(bot, logger)
+messageSender = MessageSender(bot, logger)
 SubscribersRepository = Subscribers()
 BlacklistRepository = BlackList()
 PostRep = PostRepository()
@@ -45,7 +46,6 @@ userRep = UserRepository()
 Https = TgApiConf.https
 botButtons = BotButtons()
 botTexts = BotTexts()
-messageSender = MessageSender()
 
 
 global canSendFoto, canSendVideo, canSendMessage

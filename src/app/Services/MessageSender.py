@@ -2,6 +2,9 @@ from .BaseService import BaseService
 
 
 class MessageSender(BaseService):
+    def __init__(self, bot, logger):
+        super().__init__(bot, logger)
+
     async def sendMessageToAllUsers(self, text: str):
         users = self.userRepository.getAllUsers()
         await self.logger.writeLog('Началась рассылка сообщения')
