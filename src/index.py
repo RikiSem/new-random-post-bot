@@ -103,8 +103,10 @@ async def subscriptionExpired(userId: int):
 async def firstStart(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     await rememberUser(message)
     currentMarkup = botButtons.getMainMarkup(lang=userLang)
-    if (isAdmin or isSubscriber):
+    if (isSubscriber):
         currentMarkup = botButtons.getPremiumMarkup(lang=userLang)
+    if (isAdmin):
+        currentMarkup = botButtons.getAdminMarkup(lang=userLang)
     await bot.send_message(
         userId,
         f"{botTexts.langs[userLang]['hello']}, {message.from_user.first_name}",
