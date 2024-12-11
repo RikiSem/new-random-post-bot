@@ -1,5 +1,4 @@
-import time
-from .BaseService import BaseService
+from .BaseService import BaseService, types
 
 
 class MessageSender(BaseService):
@@ -11,13 +10,15 @@ class MessageSender(BaseService):
         await self.logger.writeLog('Началась рассылка сообщения')
         for user in users:
             userId = user[self.userRepository.field_user_id]
-            try:
+            if isinstance(
                 await self.bot.send_message(
                     chat_id=userId,
                     text=text
-                )
+                ),
+                types.Message
+                ):
                 await self.logger.writeLog(F'Сообщение отправлено юзеру {userId}')
-            except():
-                await self.logger.writeLog(F'Юзер {userId} заблокировал бота')
-            time.sleep(1)
+            else:
+                await self.logger.writeLog(F'Юзеру {userId} сообщение не отправлено')
+            self.time.sleep(5)
         await self.logger.writeLog('Рассылка сообщения закончилась')
