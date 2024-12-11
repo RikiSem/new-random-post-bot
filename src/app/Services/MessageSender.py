@@ -23,5 +23,5 @@ class MessageSender(BaseService):
                     await self.logger.writeLog(F'Юзеру {userId} сообщение не отправлено')
             except exceptions.TelegramForbiddenError:
                 await self.logger.writeLog(F'Юзер {userId} заблокировал бота')
-            self.time.sleep(1)
+            self.time.sleep(30)
         await self.logger.writeLog('Рассылка сообщения закончилась')
