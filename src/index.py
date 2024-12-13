@@ -162,7 +162,7 @@ async def adminSendMessage(message: types.Message, isSubscriber, isAdmin, userLa
         )
         canSendMessage = True
 
-@dp.message(F.text not in botButtons.langs['ru'].values())
+@dp.message(not botButtons.langs['ru'].values().__contains__(F.text))
 async def sendMessageToUsers(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     global canSendMessage
     print(F.text not in botButtons.langs[userLang].values())
