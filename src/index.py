@@ -162,10 +162,10 @@ async def adminSendMessage(message: types.Message, isSubscriber, isAdmin, userLa
         )
         canSendMessage = True
 
-@dp.message(F.text in botButtons.langs['ru'].values() == False)
+@dp.message(F.text)
 async def sendMessageToUsers(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     global canSendMessage
-    if (isAdmin and canSendMessage):
+    if (isAdmin and canSendMessage and ((F.text) in botButtons.langs['ru'].values() == False)):
         await messageSender.sendMessageToAllUsers(message.text)
         canSendMessage = False
         await bot.send_message(
