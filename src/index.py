@@ -162,17 +162,17 @@ async def adminSendMessage(message: types.Message, isSubscriber, isAdmin, userLa
         )
         canSendMessage = True
 
-#@dp.message(F.text)
-#async def sendMessageToUsers(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
-#    global canSendMessage
-#    if (isAdmin and canSendMessage and (message.text not in botButtons.langs[userLang].values())):
-#        await messageSender.sendMessageToAllUsers(message.text)
-#        canSendMessage = False
-#        await bot.send_message(
-#            chat_id=userId,
-#            text='Сообщение разослано'
-#        )
-
+"""@dp.message(F.text)
+async def sendMessageToUsers(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
+    global canSendMessage
+    if (isAdmin and canSendMessage and (message.text not in botButtons.langs[userLang].values())):
+        await messageSender.sendMessageToAllUsers(message.text)
+        canSendMessage = False
+        await bot.send_message(
+            chat_id=userId,
+            text='Сообщение разослано'
+        )
+"""
 
 @dp.message(Command('buy'))
 @dp.message(F.text == botButtons.langs['ru']['buyPremium'])
