@@ -80,7 +80,12 @@ async def checkBlackList(userId: int):
 async def sendAds(userId: int):
     await bot.send_message(
         chat_id=userId,
-        text='Оформи подписку и получишь доступ к сотням видео и не только\nЖми -> /buy'
+        text='''
+        Оформи подписку и получишь доступ к сотням видео и не только\n
+        Жми -> /buy\n
+        Так же, ты можешь стать учпстником партнерской программы и получать до 21 процента от трат тех, кто пройдет по твоей ссылке и купит подписку\n
+        Для этого нажми на название бота и выбери 'Партнерская программа'
+        '''
     )
 
 async def subscriptionExpired(userId: int):
@@ -247,10 +252,11 @@ async def pay(message: types.Message, isSubscriber, isAdmin, userLang, userId, s
 async def saveFoto(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     global canSendFoto
     if canSendFoto:
-        await photo.save(message)
-        await logger.writeLog(f'@{str(message.from_user.username)}//Состояние в saveFoto - {str(canSendFoto)}')
-        print(str(message.from_user.username) + "//Состояние в saveFoto - " + str(canSendFoto))
-        await bot.send_message(message.from_user.id, botTexts.langs[userLang]['photoAdded'])
+        asyncio.gather(
+            photo.save(message),
+            logger.writeLog(f'Юзер @{str(message.from_user.username)} добавил фото'),
+            bot.send_message(message.from_user.id, botTexts.langs[userLang]['photoAdded'])
+            )
         canSendFoto = False
     elif not canSendFoto:
         await bot.send_message(message.from_user.id,
@@ -261,14 +267,19 @@ async def saveFoto(message: types.Message, isSubscriber, isAdmin, userLang, user
 async def saveVideo(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
     global canSendVideo
     if canSendVideo:
-        await video.save(message)
-        await logger.writeLog(f'@{str(message.from_user.username)}//Состояние в saveVideo - {str(canSendVideo)}')
-        print(str(message.from_user.username) + "//Состояние в saveVideo - " + str(canSendVideo))
-        await bot.send_message(message.from_user.id, botTexts.langs[userLang]['videoAdded'])
+        asyncio.gather(
+            video.save(message),
+            logger.writeLog(f'Юзер @{str(message.from_user.username)} добавил видео'),
+            bot.send_message(message.from_user.id, botTexts.langs[userLang]['videoAdded'])
+        )
         canSendVideo = False
     elif not canSendVideo:
         await bot.send_message(message.from_user.id,
                          f"{botTexts.langs[userLang]['first_press_the_button']} '{botButtons.langs[userLang]['loadVideo']}'")
+    elif not canSendVideo and not isSubscriber:
+        await bot.send_message(message.from_user.id,
+                    f'Чтобы загружать свои видео необходимо купить подписку')
+
 
 @dp.pre_checkout_query()
 async def preCheckoutQuery(pre_checkout_query: types.PreCheckoutQuery):
