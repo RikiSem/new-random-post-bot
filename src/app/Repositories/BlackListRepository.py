@@ -19,3 +19,13 @@ class BlackList(Mysql):
             result = None
         self.closeAll(connect, cursor)
         return result
+    
+    def blockUser(self, userId: int):
+        connect = self.getConnect()
+        cursor = self.getCursor(connect)
+        try:
+            cursor.execute(
+                f'INSERT INTO {self.table} (user_id) VALUES ({userId})'
+            )
+        except():
+            pass

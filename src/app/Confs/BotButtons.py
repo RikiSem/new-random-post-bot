@@ -14,6 +14,7 @@ class BotButtons:
             'waifu': 'Случайная вайфу',
             'buyPremium': 'Купить премиум',
             'adminSendMessage': 'Разослать всем юзерам',
+            'blockUser': 'Заблокировать юзера',
         },
         'en': {
             'randomFoto': 'Random foto',
@@ -49,7 +50,8 @@ class BotButtons:
             [
                 types.KeyboardButton(text=self.langs[lang]['loadVideo']),
                 types.KeyboardButton(text=self.langs[lang]['waifu']),
-                types.KeyboardButton(text=self.langs[lang]['adminSendMessage'])
+                #types.KeyboardButton(text=self.langs[lang]['adminSendMessage'])
+                types.KeyboardButton(text=self.langs[lang]['blockUser']),
             ]
         ]
         return types.ReplyKeyboardMarkup(resize_keyboard=True, keyboard=btnList)

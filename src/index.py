@@ -1,14 +1,11 @@
 import time
 import random
 import logging
-from aiogram import Bot, Dispatcher, types, F, Router
-from aiogram.handlers import PreCheckoutQueryHandler
-from aiogram.filters.command import Command
-from aiogram.types import ContentType
 import asyncio
 from datetime import datetime
 import app.Confs.Rules as rules
 from app.Confs.TgConf import TgConf
+from aiogram.types import ContentType
 from app.Services.Logger import Logger
 from app.Confs.BotTexts import BotTexts
 from app.Services.VideoPost import Video
@@ -16,15 +13,19 @@ from app.Services.PhotoPost import Photo
 from app.Confs.TgApiConf import TgApiConf
 from app.Services.Payments import Payments
 from app.Services.WaifuApi import WaifuApi
-from app.Services.MessageSender import MessageSender
 from app.Confs.BotButtons import BotButtons
+from aiogram.filters.command import Command
 from app.Confs.premiumItems import premiumItems
+from app.Services.MessageSender import MessageSender
+from aiogram.handlers import PreCheckoutQueryHandler
+from aiogram import Bot, Dispatcher, types, F, Router
 from app.Middleware.checkBlockList import CheckBlockList
-from app.Middleware.checkSubscription import CheckSubscription
+from app.Queue.SendMessageWorker import SendMessageWorker
 from app.Repositories.BlackListRepository import BlackList
 from app.Repositories.PostRepository import PostRepository
 from app.Repositories.UserRepository import UserRepository
 from app.Repositories.SubcsribersRepository import Subscribers
+from app.Middleware.checkSubscription import CheckSubscription
 
 print("Loading....")
 bot = Bot(TgApiConf.token)
@@ -47,11 +48,14 @@ Https = TgApiConf.https
 botButtons = BotButtons()
 botTexts = BotTexts()
 
+queue = asyncio.Queue()
+sendMessageWorker = SendMessageWorker(queue, bot, logger)
 
 global canSendFoto, canSendVideo, canSendMessage
 canSendMessage = False
 canSendFoto = False
 canSendVideo = False
+canBlockUser = False
 
 
 async def checkSubscriber(userId: int):
@@ -83,7 +87,7 @@ async def sendAds(userId: int):
         text='''
         Оформи подписку и получишь доступ к сотням видео и не только\n
         Жми -> /buy\n
-        Так же, ты можешь стать учпстником партнерской программы и получать до 21 процента от трат тех, кто пройдет по твоей ссылке и купит подписку\n
+        Так же, ты можешь стать учпстником партнерской программы и получать до 50 процентов от трат тех, кто пройдет по твоей ссылке и купит подписку\n
         Для этого нажми на название бота и выбери 'Партнерская программа'
         '''
     )
@@ -166,6 +170,15 @@ async def adminSendMessage(message: types.Message, isSubscriber, isAdmin, userLa
             text='Напиши сообщение'
         )
         canSendMessage = True
+
+@dp.message(F.text == botButtons.langs['ru']['blockUser'])
+async def setBlockUserId(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+        global canBlockUser
+        await bot.send_message(
+            chat_id=userId,
+            text='Введи id пользователя'
+        )
+        canBlockUser = True
 
 """@dp.message(F.text)
 async def sendMessageToUsers(message: types.Message, isSubscriber, isAdmin, userLang, userId, showAds):
@@ -304,8 +317,30 @@ async def successfulPayment(message: types.Message, isSubscriber, isAdmin, userL
         f'Неоформилась подписка у пользователя {userId}'
         print(f'Неоформилась подписка у пользователя {userId}')
 
+@dp.message()
+async def blockUser(message: types.Message, isSubscriber, isAdmin, userLang, userId):
+    global canBlockUser
+    if (canBlockUser and isAdmin):
+        BlacklistRepository.blockUser(int(message.text))
+        await bot.send_message(
+            chat_id=userId,
+            text=f'Пользователь {message.text} заблокирован',
+        )
+        canBlockUser = False
+    else:
+        await bot.send_message(
+            chat_id=userId,
+            text='Что?'
+        )
+
+async def main():
+    asyncio.gather(
+        await dp.start_polling(bot),
+        await sendMessageWorker.work(queue)
+    )
+
 
 
 print("Started")
 if __name__ == '__main__':
-    asyncio.run(dp.start_polling(bot))
+    asyncio.run(main())
