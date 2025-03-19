@@ -30,7 +30,7 @@ class CheckSubscription(BaseMiddleware):
         data['userLang'] = 'ru'
         data['userId'] = event.from_user.id
         data['markup'] = None
-        data['showAds'] = random.randint(0, 10) == 10
+        data['showAds'] = random.randint(0, 10) >= 5
         return await handler(event, data)
 
     async def checkSubscriber(self, userId: int):
